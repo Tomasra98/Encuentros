@@ -6,17 +6,19 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:4200', // Permite solo tu frontend Angular
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    origin: '*',
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: '*',
+    exposedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
-  // Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('Encuentros API')
     .setDescription('Documentación de la API del proyecto Encuentros')
     .setVersion('1.0')
-    //.addBearerAuth() // <-- Descomenta si usas JWT o tokens
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

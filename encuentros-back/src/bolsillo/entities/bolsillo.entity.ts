@@ -8,23 +8,23 @@ import {
 import { Presupuesto } from '../../presupuesto/entities/presupuesto.entity';
 import { Encuentro } from '../../encuentro/entities/encuentro.entity';
 
-@Entity('BOLSILLOS')
+@Entity('bolsillos')
 export class Bolsillo {
-  @PrimaryGeneratedColumn({ name: 'ID_BOLSILLO' })
+  @PrimaryGeneratedColumn({ name: 'id_bolsillo' })
   id: number;
 
-  @Column({ name: 'ID_PRESUPUESTO', nullable: true })
+  @Column({ name: 'id_presupuesto', nullable: true })
   idPresupuesto: number;
 
-  @Column({ name: 'ID_ENCUENTRO' })
+  @Column({ name: 'id_encuentro' })
   idEncuentro: number;
 
-  @Column({ name: 'NOMBRE', type: 'varchar2', length: 200 })
+  @Column({ name: 'nombre', type: 'varchar', length: 200 })
   nombre: string;
 
   @Column({
-    name: 'SALDO_ACTUAL',
-    type: 'number',
+    name: 'saldo_actual',
+    type: 'integer',
     precision: 15,
     scale: 2,
     default: 0,
@@ -32,10 +32,10 @@ export class Bolsillo {
   saldoActual: number;
 
   @ManyToOne(() => Presupuesto)
-  @JoinColumn({ name: 'ID_PRESUPUESTO' })
+  @JoinColumn({ name: 'id_presupuesto' })
   presupuesto: Presupuesto;
 
   @ManyToOne(() => Encuentro)
-  @JoinColumn({ name: 'ID_ENCUENTRO' })
+  @JoinColumn({ name: 'id_encuentro' })
   encuentro: Encuentro;
 }

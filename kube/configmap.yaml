@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: encuentros-config
+  namespace: encuentros
+  labels:
+    app: encuentros
+data:
+  # Database Configuration
+  DB_TYPE: "postgres"
+  DB_HOST: "database-service"
+  DB_PORT: "5432"
+  DB_DATABASE: "encuentros_db"
+  DB_SSL: "false"
+
+  # Backend Configuration
+  BACKEND_PORT: "3000"
+
+  # Grafana Configuration
+  GF_USERS_ALLOW_SIGN_UP: "false"
+  GF_NEWS_NEWS_FEED_ENABLED: "false"

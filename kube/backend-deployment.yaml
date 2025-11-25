@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: encuentros
+  labels:
+    app: encuentros
+    component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: encuentros
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: encuentros
+        component: backend
+    spec:
+      containers:
+        - name: backend
+          image: joshhd01/encuentros-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: DB_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: encuentros-config
+                  key: DB_TYPE
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: encuentros-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: encuentros-config
+                  key: DB_PORT
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: encuentros-config
+                  key: DB_DATABASE
+            - name: DB_SSL
+              valueFrom:
+                configMapKeyRef:
+                  name: encuentros-config
+                  key: DB_SSL
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: encuentros-secret
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: encuentros-secret
+                  key: DB_PASSWORD
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: encuentros-config
+                  key: BACKEND_PORT
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3

@@ -14,21 +14,17 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'oracle',
-      host: 'localhost',
-      port: 1521,
-      // En el caso de la mayoría deben poner:
-      // username: 'C##ENCUENTROS_ADMIN',
-      username: 'C##ENCUENTROS_ADMIN', // Yo: Tomas
-      password: 'admin',
-      // Pueden verlo en SqlDeveloper, en propiedades de cada conexión, en este caso en
-      // XE_ENCUENTROS, allí ven si se conectan por SID o ServiceName y si es: XE o XEPDB1
-      // En el caso de la mayoría deben poner:
-      // sid: 'XE',
-      serviceName: 'XE', // Yo: Tomas
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT || '5432', 10),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      ssl: process.env.DB_SSL === 'require' ? { rejectUnauthorized: false } : false,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
-      migrationsRun: true,
+      migrationsRun: false,
+      logging: true,
     }),
     AuthModule,
     UsersModule,

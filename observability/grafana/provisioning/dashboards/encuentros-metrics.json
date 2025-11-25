@@ -1,0 +1,339 @@
+{
+  "title": "Encuentros Container Metrics",
+  "uid": "encuentros-metrics",
+  "tags": ["encuentros", "metrics", "containers"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "editable": true,
+  "panels": [
+    {
+      "id": 1,
+      "title": "CPU Usage by Container",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name=~\"encuentros.*\"}[5m])) * 100",
+          "refId": "A",
+          "legendFormat": "{{name}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "encuentros_back"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "green"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_front"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "red"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_db"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_grafana"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "yellow"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_prometheus"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "dark-purple"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_loki"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "orange"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_promtail"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "super-light-green"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_cadvisor"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "super-light-purple"}}]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "title": "Memory Usage by Container",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (name) (container_memory_usage_bytes{name=~\"encuentros.*\"}) / 1024 / 1024",
+          "refId": "A",
+          "legendFormat": "{{name}}"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes",
+          "min": 0
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "encuentros_back"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "green"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_front"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "red"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_db"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_grafana"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "yellow"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_prometheus"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "dark-purple"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_loki"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "orange"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_promtail"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "super-light-green"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "encuentros_cadvisor"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "super-light-purple"}}]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "title": "Total Network I/O",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(container_network_receive_bytes_total{name=~\"encuentros_.*\"}[5m])) / 1024",
+          "refId": "A",
+          "legendFormat": "Receive"
+        },
+        {
+          "expr": "sum(rate(container_network_transmit_bytes_total{name=~\"encuentros_.*\"}[5m])) / 1024",
+          "refId": "B",
+          "legendFormat": "Transmit"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "KBs",
+          "min": 0
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Total Disk I/O",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(container_fs_reads_bytes_total{name=~\"encuentros_.*\"}[5m])) / 1024",
+          "refId": "A",
+          "legendFormat": "Read"
+        },
+        {
+          "expr": "sum(rate(container_fs_writes_bytes_total{name=~\"encuentros_.*\"}[5m])) / 1024",
+          "refId": "B",
+          "legendFormat": "Write"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "KBs",
+          "min": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Active Containers",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "count(count by (name) (container_last_seen{name=~\"encuentros_.*\"}))",
+          "refId": "A",
+          "legendFormat": "Containers"
+        }
+      ],
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "red"},
+              {"value": 1, "color": "yellow"},
+              {"value": 6, "color": "green"}
+            ]
+          }
+        }
+      },
+      "options": {
+        "textMode": "value",
+        "colorMode": "background"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Total Memory Used",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(container_memory_usage_bytes{name=~\"encuentros.*\"}) / 1024 / 1024 / 1024",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decgbytes",
+          "decimals": 2
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "Network Traffic (KB/s)",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(container_network_receive_bytes_total{name=~\"encuentros.*\"}[5m]) + rate(container_network_transmit_bytes_total{name=~\"encuentros.*\"}[5m])) / 1024",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "KBs",
+          "decimals": 2
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Average CPU Usage",
+      "type": "gauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "avg(rate(container_cpu_usage_seconds_total{name=~\"encuentros.*\"}[5m])) * 100",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"value": 0, "color": "green"},
+              {"value": 60, "color": "yellow"},
+              {"value": 80, "color": "red"}
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": ["10s", "30s", "1m", "5m"]
+  }
+}

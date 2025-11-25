@@ -2,25 +2,25 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { Encuentro } from '../../encuentro/entities/encuentro.entity';
 import { User } from '../../users/entities/user.entity';
 
-@Entity('PARTICIPANTES_ENCUENTRO')
+@Entity('participantes_encuentro')
 export class ParticipanteEncuentro {
-  @PrimaryGeneratedColumn({ type: 'number', name: 'ID_PARTICIPACION' })
+  @PrimaryGeneratedColumn({ type: 'integer', name: 'id_participacion' })
   id: number;
 
-  @Column({ name: 'ID_ENCUENTRO', type: 'number', nullable: false })
+  @Column({ name: 'id_encuentro', type: 'integer', nullable: false })
   idEncuentro: number;
 
-  @Column({ name: 'ID_USUARIO', type: 'number', nullable: false })
+  @Column({ name: 'id_usuario', type: 'integer', nullable: false })
   idUsuario: number;
 
-  @Column({ name: 'ROL', type: 'varchar2', length: 50, nullable: false })
+  @Column({ name: 'rol', type: 'varchar', length: 50, nullable: false })
   rol: string;
 
   @ManyToOne(() => Encuentro)
-  @JoinColumn({ name: 'ID_ENCUENTRO' })
+  @JoinColumn({ name: 'id_encuentro' })
   encuentro: Encuentro;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'ID_USUARIO' })
+  @JoinColumn({ name: 'id_usuario' })
   usuario: User;
 }

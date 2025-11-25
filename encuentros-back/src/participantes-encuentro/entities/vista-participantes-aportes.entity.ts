@@ -1,7 +1,7 @@
 import { ViewEntity, ViewColumn } from 'typeorm';
 
 @ViewEntity({
-  name: 'VISTAPARTICIPANTESAPORTES',
+  name: 'vistaparticipantesaportes',
   expression: `
     SELECT 
       p.id_encuentro,
@@ -21,24 +21,24 @@ import { ViewEntity, ViewColumn } from 'typeorm';
   `
 })
 export class VistaParticipantesAportes {
-  @ViewColumn({ name: 'ID_ENCUENTRO' })
+  @ViewColumn({ name: 'id_encuentro' })
   idEncuentro: number;
 
-  @ViewColumn({ name: 'NOMBRE_ENCUENTRO' })
+  @ViewColumn({ name: 'nombre_encuentro' })
   nombreEncuentro: string;
 
-  @ViewColumn({ name: 'ID_USUARIO' })
+  @ViewColumn({ name: 'id_usuario' })
   idUsuario: number;
 
-  @ViewColumn({ name: 'NOMBRE_USUARIO' })
+  @ViewColumn({ name: 'nombre_usuario' })
   nombreUsuario: string;
 
-  @ViewColumn({ name: 'APELLIDO_USUARIO' })
+  @ViewColumn({ name: 'apellido_usuario' })
   apellidoUsuario: string;
 
-  @ViewColumn({ name: 'ROL' })
+  @ViewColumn({ name: 'rol' })
   rol: string;
 
-  @ViewColumn({ name: 'TOTAL_APORTES' })
+  @ViewColumn({ name: 'total_aportes' })
   totalAportes: number;
 }

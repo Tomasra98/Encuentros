@@ -9,17 +9,17 @@ import {
 import { Encuentro } from '../../encuentro/entities/encuentro.entity';
 import { ItemPresupuesto } from './item-presupuesto.entity';
 
-@Entity('PRESUPUESTOS')
+@Entity('presupuestos')
 export class Presupuesto {
-  @PrimaryGeneratedColumn({ name: 'ID_PRESUPUESTO' })
+  @PrimaryGeneratedColumn({ name: 'id_presupuesto' })
   id: number;
 
-  @Column({ name: 'ID_ENCUENTRO' })
+  @Column({ name: 'id_encuentro' })
   idEncuentro: number;
 
   @Column({
-    name: 'PRESUPUESTO_TOTAL',
-    type: 'number',
+    name: 'presupuesto_total',
+    type: 'integer',
     precision: 15,
     scale: 2,
     default: 0,
@@ -27,7 +27,7 @@ export class Presupuesto {
   presupuestoTotal: number;
 
   @ManyToOne(() => Encuentro)
-  @JoinColumn({ name: 'ID_ENCUENTRO' })
+  @JoinColumn({ name: 'id_encuentro' })
   encuentro: Encuentro;
 
   @OneToMany(() => ItemPresupuesto, (item) => item.presupuesto)

@@ -135,8 +135,6 @@ export class UsersController {
       return { success: true, message: 'Solicitud enviada' };
     } catch (err: any) {
       console.error('Error creando solicitud de amistad', err);
-      // Si Oracle devolvió un error RAISE_APPLICATION_ERROR con código -20002/-20003/-20001,
-      // el mensaje llega en err.message o err.error. Hacemos un match simple.
       const msg = (err && (err.message || err.error || JSON.stringify(err))) || 'Error desconocido';
       if (msg.includes('-20002')) {
         throw new HttpException('El usuario al que le va a enviar una solicitud ya le ha enviado una a usted.', 400);

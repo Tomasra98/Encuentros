@@ -49,7 +49,6 @@ export class ParticipantesEncuentroService {
       throw new ConflictException('El usuario ya está participando en este encuentro');
     }
 
-    // Usar SQL directo para evitar problemas con constraints de Oracle
     const rol = createParticipanteDto.rol || 'participante';
     
     try {

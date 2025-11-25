@@ -1,48 +1,141 @@
 version: "3.8"
 services:
-  db:
-    image: gvenzl/oracle-xe:21-slim
+  database:
+    build: ./database
+    image: joshhd01/encuentros-database:latest
     container_name: encuentros_db
     environment:
-      # contraseña para SYS/SYSTEM (requerido en la primera inicialización)
-      ORACLE_PASSWORD: admin
-      # crea un usuario de aplicación (APP_USER) con APP_USER_PASSWORD
-      APP_USER: C##ENCUENTROS_ADMIN
-      APP_USER_PASSWORD: admin
-      ORACLE_DATABASE: XE
+      POSTGRES_DB: encuentros_db
+      POSTGRES_USER: encuentros_user
+      POSTGRES_PASSWORD: encuentros_pass
     ports:
-      - "1521:1521"
+      - "5432:5432"
     volumes:
-      - oracle_data:/opt/oracle/oradata
-    restart: always
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - encuentros-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U encuentros_user -d encuentros_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
-    build:
-      context: ./encuentros-back
+    image: joshhd01/encuentros-backend:latest
     container_name: encuentros_back
     environment:
-      # Variables leídas por la configuración TypeORM (ver patch sugerido)
-      DB_HOST: db
-      DB_PORT: "1521"
-      DB_USERNAME: C##ENCUENTROS_ADMIN
-      DB_PASSWORD: admin
-      DB_SID: XE
+      DB_TYPE: postgres
+      DB_HOST: database
+      DB_PORT: "5432"
+      DB_USERNAME: encuentros_user
+      DB_PASSWORD: encuentros_pass
+      DB_DATABASE: encuentros_db
+      DB_SSL: "false"
       PORT: "3000"
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      database:
+        condition: service_healthy
     restart: on-failure
+    networks:
+      - encuentros-net
 
   frontend:
-    build:
-      context: ./encuentros-front
+    image: joshhd01/encuentros-frontend:latest
     container_name: encuentros_front
     ports:
-      - "80:80"
+      - "8090:80"
     depends_on:
       - backend
     restart: on-failure
+    networks:
+      - encuentros-net
+
+  loki:
+    image: grafana/loki:2.9.3
+    container_name: encuentros_loki
+    ports:
+      - "3110:3100"
+    volumes:
+      - ./observability/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+    networks:
+      - encuentros-net
+
+  promtail:
+    image: grafana/promtail:2.9.3
+    container_name: encuentros_promtail
+    volumes:
+      - //var/run/docker.sock:/var/run/docker.sock:ro
+      - ./observability/promtail-config.yml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    restart: unless-stopped
+    networks:
+      - encuentros-net
+
+  grafana:
+    image: grafana/grafana:10.2.3
+    container_name: encuentros_grafana
+    ports:
+      - "3020:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_NEWS_NEWS_FEED_ENABLED=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - loki
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - encuentros-net
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: encuentros_prometheus
+    ports:
+      - "9095:9090"
+    volumes:
+      - ./observability/prometheus-config.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: unless-stopped
+    networks:
+      - encuentros-net
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: encuentros_cadvisor
+    ports:
+      - "8085:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - //var/run/docker.sock:/var/run/docker.sock:ro
+    privileged: true
+    restart: unless-stopped
+    networks:
+      - encuentros-net
 
 volumes:
-  oracle_data:
+  db_data:
+  loki_data:
+  grafana_data:
+  prometheus_data:
+
+networks:
+  encuentros-net:
+    driver: bridge
